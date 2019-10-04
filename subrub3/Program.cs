@@ -34,6 +34,8 @@ namespace subrub3
                 return;
             }
 
+            List<string> lstAvoid = new List<string>();
+
             for(int i=0; i < args.Length; i++)
             {
                 if(args[i] == "--threads")
@@ -65,11 +67,17 @@ namespace subrub3
                 {
                     strDomainList = args[++i];
                 }
+                else if (args[i] == "--avoid")
+                {
+                    lstAvoid.Add(args[++i]);
+                }
                 else if (args[i] == "--output")
                 {
                     strOutput = args[++i];
                 }
             }
+
+
 
             SubFind[] sfList = new SubFind[threadCount];
             string[] strDomains = File.ReadAllLines(strDomainList);
@@ -85,6 +93,8 @@ namespace subrub3
                 {
                     strPostfixDomain = strDomain
                 };
+
+                foreach(string str in lstAvoid) { sfList[i].addAvoidIP(str);  }
 
                 for (int x=0; x < divider; x++)
                 {

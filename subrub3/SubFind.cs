@@ -22,11 +22,17 @@ namespace subrub3
         public List<string> lstSubdomains = new List<string>();
         public List <string> strPostfixDomain = new List<string>();
         public List<SubResult> lstResult = new List<SubResult>();
+        private HashSet<string> lstAvoidIP = new HashSet<string>();
         public bool bVerbose = true;
         public string strLabel = string.Empty;
         int testCount = 0;
 
         static int objectCount = 0;
+
+        public void addAvoidIP(string strIP)
+        {
+            this.lstAvoidIP.Add(strIP);
+        }
 
         public SubFind()
         {
@@ -42,6 +48,11 @@ namespace subrub3
         public int getResultCount()
         {
             return lstResult.Count;
+        }
+
+        bool shouldAvoid(string strIP)
+        {
+            return lstAvoidIP.Contains(strIP);
         }
 
         public void run()
@@ -69,6 +80,10 @@ namespace subrub3
 
                     if (ip?.AddressList?.Length > 0)
                     {
+                        bool bAvoid = ip.AddressList.FirstOrDefault(e => this.shouldAvoid(e.ToString())) != null;
+
+                        if (bAvoid) continue;
+
                         SubResult sr = new SubResult
                         {
                             strDomain = $"{strDomain}.{strPostfixDomain[i]}",
