@@ -17,6 +17,9 @@ namespace subrub3
         {
             public string strDomain = null;
             public List <string> strIP = null;
+            public DigStatus.DigInfo digInfo = null;
+            public string strHttpsResult = null;
+            public string strHttpResult = null;
         }
 
         public List<string> lstSubdomains = new List<string>();
@@ -26,6 +29,8 @@ namespace subrub3
         public bool bVerbose = true;
         public string strLabel = string.Empty;
         int testCount = 0;
+
+        public bool bFull = false;
 
         static int objectCount = 0;
 
@@ -93,6 +98,58 @@ namespace subrub3
                         lstResult.Add(sr);
 
                         Console.WriteLine($"[+] Found : {sr.strDomain} with ip: {string.Join(", ", sr.strIP)}");
+
+                        if(bFull)
+                        {
+                            DigStatus ds = new DigStatus();
+                            
+                            Console.WriteLine("[+] Executing dig: " + sr.strDomain);
+                            DigStatus.DigInfo di = ds.getDigResult(sr.strDomain);
+
+                            sr.digInfo = di;
+
+                            
+                            WebRequest wr = WebRequest.Create($"https://{sr.strDomain}/");
+
+
+                            if (wr != null)
+                            {
+                                wr.Timeout = 4000;
+
+                                try
+                                {
+                                    HttpWebResponse response = (HttpWebResponse)wr.GetResponse();
+
+                                    sr.strHttpsResult = response?.StatusCode.ToString();
+                                }
+                                catch(Exception ex)
+                                {
+                                    sr.strHttpsResult = ex.Message;
+                                }
+                            }
+
+                            HttpWebRequest wr2 = (HttpWebRequest) WebRequest.Create($"http://{sr.strDomain}/");
+
+
+                            if (wr2 != null)
+                            {
+                                wr2.Timeout = 5000;
+
+                                try
+                                {
+                                    HttpWebResponse response2 = (HttpWebResponse)wr2.GetResponse();
+
+                                    sr.strHttpResult = response2?.StatusCode.ToString();
+                                }
+                                catch(Exception ex2)
+                                {
+                                    sr.strHttpResult = ex2.Message;
+                                }
+                            }
+
+
+
+                        }
                     }
                 }
 

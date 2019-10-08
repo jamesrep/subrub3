@@ -17,12 +17,13 @@ namespace subrub3
         static void Main(string[] args)
         {
             int threadCount = 5;
-            List <string> strDomain = new List<string>();
+            List<string> strDomain = new List<string>();
             string strDomainList = null;
             string strOutput = null;
             bool bVerbose = true;
+            bool bFull = false;
 
-            if(args.Length < 2)
+            if (args.Length < 2)
             {
                 Console.WriteLine("[+] Searches for subdomains (specify at least --domain and --domainlist)");
                 Console.WriteLine("--threads <number of threads to use>");
@@ -36,13 +37,13 @@ namespace subrub3
 
             List<string> lstAvoid = new List<string>();
 
-            for(int i=0; i < args.Length; i++)
+            for (int i = 0; i < args.Length; i++)
             {
-                if(args[i] == "--threads")
+                if (args[i] == "--threads")
                 {
                     threadCount = Convert.ToInt32(args[++i]);
                 }
-                else if(args[i] == "--domain")
+                else if (args[i] == "--domain")
                 {
                     string strDomainArg = args[++i];
 
@@ -75,6 +76,10 @@ namespace subrub3
                 {
                     strOutput = args[++i];
                 }
+                else if (args[i] == "--full")
+                {
+                    bFull = true;
+                }
             }
 
 
@@ -87,26 +92,27 @@ namespace subrub3
 
             int currentLine = 0;
 
-            for(int i=0; i < sfList.Length; i++)
+            for (int i = 0; i < sfList.Length; i++)
             {
                 sfList[i] = new SubFind
                 {
-                    strPostfixDomain = strDomain
+                    strPostfixDomain = strDomain,
+                    bFull = bFull
                 };
 
-                foreach(string str in lstAvoid) { sfList[i].addAvoidIP(str);  }
+                foreach (string str in lstAvoid) { sfList[i].addAvoidIP(str); }
 
-                for (int x=0; x < divider; x++)
+                for (int x = 0; x < divider; x++)
                 {
                     sfList[i].lstSubdomains.Add(strDomains[currentLine++]);
                 }
             }
 
-            if(rest > 0)
+            if (rest > 0)
             {
-                for(int x=currentLine; x < strDomains.Length; x++)
+                for (int x = currentLine; x < strDomains.Length; x++)
                 {
-                    sfList[sfList.Length-1].lstSubdomains.Add(strDomains[x]);
+                    sfList[sfList.Length - 1].lstSubdomains.Add(strDomains[x]);
                 }
             }
 
@@ -116,8 +122,8 @@ namespace subrub3
 
             DateTime dtStart = DateTime.Now;
 
-            for(int i=0; i < sfList.Length; i++)
-            {               
+            for (int i = 0; i < sfList.Length; i++)
+            {
                 Thread th = new Thread(new ThreadStart(sfList[i].run));
                 allThreads.Add(th);
                 th.Start();
@@ -125,10 +131,11 @@ namespace subrub3
 
             bool bContinue = true;
 
-            while(bContinue)
+            while (bContinue)
             {
+                int nrDone = allThreads.Select(e => e.IsAlive).Where(a => a == false).Count();
 
-                bContinue = allThreads.FirstOrDefault(e => e.ThreadState == ThreadState.Running) != null;
+                bContinue = nrDone < allThreads.Count;
 
                 if (bVerbose)
                 {
@@ -140,14 +147,17 @@ namespace subrub3
 
                         dtStart = DateTime.Now;
                     }
-
-                    
                 }
+
+                System.Threading.Thread.Sleep(250);
             }
 
             Console.WriteLine("[+] All done");
 
-            if(strOutput != null)
+            //allThreads.Select(e => e.ThreadState == ThreadState.Running || e.ThreadState == ThreadState.Suspended || e.ThreadState == ThreadState.WaitSleepJoin
+            //    || e.ThreadState == ThreadState.SuspendRequested).ToList().ForEach(a => Console.WriteLine(a));
+
+            if (strOutput != null)
             {
                 Console.WriteLine($"[+] Writing to {strOutput} ");
 
@@ -158,7 +168,14 @@ namespace subrub3
                     foreach (var result in s.lstResult)
                     {
                         string strOut = $"{result.strDomain}|{string.Join(", ", result.strIP)}";
+
+                        if(result?.digInfo?.strStatus != null)
+                        {
+                            strOut += $"|http:{result.strHttpResult}|https:{result.strHttpsResult}|{result.digInfo.strStatus}|{string.Join(",", result.digInfo.lstRecord.Select(e => $"{e.strType}:{e.strStart}:{e.strRecord}" ).ToArray())}";
+                        }
+
                         sw.WriteLine(strOut);
+                        sw.Flush();
 
                         if(bVerbose)
                         {
