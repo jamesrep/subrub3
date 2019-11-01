@@ -1,4 +1,5 @@
 ﻿// Be careful with this!!! it can potentially cause a lot of requests
+// Only use this for your own domains or domains that you have permission to test.
 // See License agreement!
 // wallparse@gmail.com
 
