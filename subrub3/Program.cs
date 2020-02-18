@@ -23,6 +23,7 @@ namespace subrub3
             string strOutput = null;
             bool bVerbose = true;
             bool bFull = false;
+            bool bAlwaysDig = false;
 
             if (args.Length < 2)
             {
@@ -32,6 +33,7 @@ namespace subrub3
                 Console.WriteLine("--domainfile <path to list of domains to test>");
                 Console.WriteLine("--domainlist <path to list of subdomains to test>");
                 Console.WriteLine("--output <output file>");
+                Console.WriteLine("--alwaysdig dig domain even if it could not be resolved");
 
                 return;
             }
@@ -81,6 +83,10 @@ namespace subrub3
                 {
                     bFull = true;
                 }
+                else if (args[i] == "--alwaysdig")
+                {
+                    bAlwaysDig = true;
+                }
             }
 
 
@@ -90,7 +96,6 @@ namespace subrub3
 
             int divider = strDomains.Length / threadCount;
             int rest = strDomains.Length % threadCount;
-
             int currentLine = 0;
 
             for (int i = 0; i < sfList.Length; i++)
@@ -98,7 +103,8 @@ namespace subrub3
                 sfList[i] = new SubFind
                 {
                     strPostfixDomain = strDomain,
-                    bFull = bFull
+                    bFull = bFull,
+                    bAlwaysDig = bAlwaysDig
                 };
 
                 foreach (string str in lstAvoid) { sfList[i].addAvoidIP(str); }

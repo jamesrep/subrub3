@@ -30,7 +30,7 @@ namespace subrub3
         public bool bVerbose = true;
         public string strLabel = string.Empty;
         int testCount = 0;
-
+        public bool bAlwaysDig = false;
         public bool bFull = false;
 
         static int objectCount = 0;
@@ -81,6 +81,27 @@ namespace subrub3
                     }
                     catch(Exception ex)
                     {
+                        if(ex is System.Net.Sockets.SocketException && bAlwaysDig)
+                        {
+                            SubResult sr = new SubResult
+                            {
+                                strDomain = $"{strDomain}.{strPostfixDomain[i]}",
+                                strIP = ip?.AddressList?.ToList().Select(a => a.ToString()).ToList()
+                            };
+
+                            DigStatus ds = new DigStatus();
+
+                            Console.WriteLine($"[+] Domain was not resolved executing dig anyway {sr.strDomain}");
+                            DigStatus.DigInfo di = ds.getDigResult(sr.strDomain);
+
+                            if (di != null && di.lstRecord != null && (di.lstRecord.Count > 0 || di.strStatus != null))
+                            {
+                                Console.WriteLine($"[+] Dig successful: {di.strStatus} with {di.lstRecord.Count} records");
+                                sr.digInfo = di;
+                                lstResult.Add(sr);
+                            }
+                        }
+
                         continue;
                     }
 
@@ -152,6 +173,7 @@ namespace subrub3
 
                         }
                     }
+
                 }
 
             }
