@@ -126,6 +126,7 @@ namespace subrub3
                         if(bFull)
                         {
                             DigStatus ds = new DigStatus();
+                            ds.strFullDigPath = strFullDigPath;
                             
                             Console.WriteLine("[+] Executing dig: " + sr.strDomain);
                             DigStatus.DigInfo di = ds.getDigResult(sr.strDomain);
