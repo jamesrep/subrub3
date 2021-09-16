@@ -17,8 +17,8 @@ namespace subrub3
     {
         public class DigAnswerRecord
         {
-            public string strType; // CNAME, A
-            public string strRecord; // ip-adress or domain.
+            public string strType;      // CNAME, A
+            public string strRecord;    // ip-adress or domain.
             public string strStart;
         }
 
@@ -31,8 +31,10 @@ namespace subrub3
         public string strDNSServer = "8.8.8.8";
         public string strDigPath = @"C:\bin\bind";
         public string strFullDigPath = null;
+        public bool bDigResult = false;
         string strRegexStatus = @"status\:\s{0,3}(?<status>\w+)";
         string strRegexAnswer = @"([\w|\.]+)";
+
 
         enum parseMode
         {
@@ -73,6 +75,14 @@ namespace subrub3
             while (!p.StandardOutput.EndOfStream)
             {
                 var strLine = p.StandardOutput.ReadLine();
+
+
+                if(bDigResult && strLine != null && strLine.Length > 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine(strLine);
+                    Console.ResetColor();
+                }
 
 
                 if(parseMode.status == pm && strLine.Length > 2)

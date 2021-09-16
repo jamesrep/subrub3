@@ -25,6 +25,7 @@ namespace subrub3
             bool bFull = false;
             bool bAlwaysDig = false;
             string strFullDigPath = null;
+            bool bDigResult = false;
 
             if (args.Length < 2)
             {
@@ -36,6 +37,7 @@ namespace subrub3
                 Console.WriteLine("--output <output file>");
                 Console.WriteLine("--full        do a dig for every domain");
                 Console.WriteLine("--alwaysdig   dig domain even if it could not be resolved");
+                Console.WriteLine("--digresult   Always print the dig command output");
 
                 return;
             }
@@ -95,6 +97,10 @@ namespace subrub3
                 {
                     bAlwaysDig = true;
                 }
+                else if (args[i] == "--digresult")
+                {
+                    bDigResult = true;
+                }
             }
 
 
@@ -113,7 +119,8 @@ namespace subrub3
                     strPostfixDomain = strDomain,
                     bFull = bFull,
                     bAlwaysDig = bAlwaysDig,
-                    strFullDigPath = strFullDigPath
+                    strFullDigPath = strFullDigPath,
+                    bDigResult = bDigResult
                 };
 
                 foreach (string str in lstAvoid) { sfList[i].addAvoidIP(str); }
