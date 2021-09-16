@@ -32,6 +32,7 @@ namespace subrub3
         int testCount = 0;
         public bool bAlwaysDig = false;
         public bool bFull = false;
+        public string strFullDigPath = null;
 
         static int objectCount = 0;
 
@@ -90,6 +91,7 @@ namespace subrub3
                             };
 
                             DigStatus ds = new DigStatus();
+                            ds.strFullDigPath = this.strFullDigPath;
 
                             Console.WriteLine($"[+] Domain was not resolved executing dig anyway {sr.strDomain}");
                             DigStatus.DigInfo di = ds.getDigResult(sr.strDomain);

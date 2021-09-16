@@ -24,6 +24,7 @@ namespace subrub3
             bool bVerbose = true;
             bool bFull = false;
             bool bAlwaysDig = false;
+            string strFullDigPath = null;
 
             if (args.Length < 2)
             {
@@ -71,6 +72,12 @@ namespace subrub3
                 {
                     strDomainList = args[++i];
                 }
+                else if (args[i] == "--fulldigpath")
+                {                    
+                    strFullDigPath = args[++i];
+
+                    Console.WriteLine("[+] Dig-path set to {strFullDigPath}");
+                }
                 else if (args[i] == "--avoid")
                 {
                     lstAvoid.Add(args[++i]);
@@ -104,7 +111,8 @@ namespace subrub3
                 {
                     strPostfixDomain = strDomain,
                     bFull = bFull,
-                    bAlwaysDig = bAlwaysDig
+                    bAlwaysDig = bAlwaysDig,
+                    strFullDigPath = strFullDigPath
                 };
 
                 foreach (string str in lstAvoid) { sfList[i].addAvoidIP(str); }

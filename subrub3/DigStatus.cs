@@ -30,6 +30,7 @@ namespace subrub3
 
         public string strDNSServer = "8.8.8.8";
         public string strDigPath = @"C:\bin\bind";
+        public string strFullDigPath = null;
         string strRegexStatus = @"status\:\s{0,3}(?<status>\w+)";
         string strRegexAnswer = @"([\w|\.]+)";
 
@@ -45,12 +46,21 @@ namespace subrub3
             DigInfo dinf = new DigInfo();
             Process p = new Process();
 
+            string strPathToUse = $"{strDigPath}{System.IO.Path.DirectorySeparatorChar}dig.exe";
+            string strWorkingDir = strDigPath;
+
+            if (strFullDigPath != null)
+            {
+                strPathToUse = strFullDigPath;
+                strWorkingDir = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            }
+
             p.StartInfo = new ProcessStartInfo($"{strDigPath}\\dig.exe")
             {
                 RedirectStandardInput = false,
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
-                WorkingDirectory = strDigPath,
+                WorkingDirectory = strWorkingDir,
                 LoadUserProfile = false,
                 WindowStyle = ProcessWindowStyle.Hidden,
                 Arguments = $"{strDomainToTest} @{strDNSServer}"
