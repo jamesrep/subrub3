@@ -76,7 +76,7 @@ namespace subrub3
                 {                    
                     strFullDigPath = args[++i];
 
-                    Console.WriteLine("[+] Dig-path set to {strFullDigPath}");
+                    Console.WriteLine($"[+] Dig-path set to {strFullDigPath}");
                 }
                 else if (args[i] == "--avoid")
                 {
