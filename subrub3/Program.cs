@@ -34,7 +34,8 @@ namespace subrub3
                 Console.WriteLine("--domainfile <path to list of domains to test>");
                 Console.WriteLine("--domainlist <path to list of subdomains to test>");
                 Console.WriteLine("--output <output file>");
-                Console.WriteLine("--alwaysdig dig domain even if it could not be resolved");
+                Console.WriteLine("--full        do a dig for every domain");
+                Console.WriteLine("--alwaysdig   dig domain even if it could not be resolved");
 
                 return;
             }

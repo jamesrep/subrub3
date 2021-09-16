@@ -55,7 +55,7 @@ namespace subrub3
                 strWorkingDir = System.Reflection.Assembly.GetExecutingAssembly().Location;
             }
 
-            p.StartInfo = new ProcessStartInfo($"{strDigPath}\\dig.exe")
+            p.StartInfo = new ProcessStartInfo(strPathToUse)
             {
                 RedirectStandardInput = false,
                 RedirectStandardOutput = true,
